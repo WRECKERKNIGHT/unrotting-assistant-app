@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+*.spec
+.unrotting.log
+
+# Config (keep structure, ignore data)
+config/config.json
+config/stats.json
+config/tasks.json
+config/hosts.backup
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+*.exe
+*.dmg
+*.apk
+*.pkg
+
+# Node (TS project remnants)
+node_modules/
+packages/*/node_modules/
+apps/*/node_modules/
+packages/*/dist/
+apps/*/dist/

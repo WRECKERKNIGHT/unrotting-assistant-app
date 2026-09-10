@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unrotting</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+
+        <!-- Password Screen -->
+        <div id="password-screen" class="screen">
+            <div class="login-card">
+                <div class="logo">
+                    <span class="logo-icon">🔥</span>
+                    <h1>Unrotting</h1>
+                    <p class="tagline">Block the noise. Stay focused.</p>
+                </div>
+                <div class="login-form" id="login-form">
+                    <input type="password" id="password-input" placeholder="Enter password" autocomplete="off">
+                    <button id="password-btn" class="btn btn-primary" style="width:100%">Enter</button>
+                    <p id="password-error" class="error"></p>
+                </div>
+                <div class="first-run" id="first-run-box" style="display:none;">
+                    <h3>Welcome — set your password</h3>
+                    <input type="password" id="new-password" placeholder="Create password" autocomplete="off">
+                    <input type="password" id="confirm-password" placeholder="Confirm password" autocomplete="off">
+                    <button id="set-password-btn" class="btn btn-primary" style="width:100%">Set Password</button>
+                    <p id="pw-error" class="error"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main App -->
+        <div id="main-app" class="screen hidden">
+            <!-- Header -->
+            <header class="glass-header">
+                <div class="logo-small">
+                    <span class="logo-icon-small">🔥</span>
+                    <span>Unrotting</span>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-chip">⬡ <span id="header-points">0</span></div>
+                    <div class="stat-chip">🔥 <span id="header-streak">0</span></div>
+                </div>
+                <div class="header-actions">
+                    <button id="settings-btn" class="icon-btn" title="Settings">⚙</button>
+                    <button id="lock-btn" class="icon-btn" title="Lock">🔒</button>
+                </div>
+            </header>
+
+            <main>
+                <!-- Timer -->
+                <div class="card timer-section">
+                    <div class="timer-circle">
+                        <svg viewBox="0 0 200 200">
+                            <circle cx="100" cy="100" r="90" class="circle-bg"/>
+                            <circle cx="100" cy="100" r="90" class="circle-progress" id="progress-ring"/>
+                        </svg>
+                        <div class="timer-text">
+                            <div id="timer-digits" class="timer-digits">45:00</div>
+                            <div id="timer-label" class="timer-label">Focus</div>
+                        </div>
+                    </div>
+                    <div class="timer-controls">
+                        <button id="start-btn" class="btn btn-primary btn-large">Start Focus</button>
+                        <button id="skip-btn" class="btn btn-secondary btn-large">Skip Break</button>
+                    </div>
+                </div>
+
+                <!-- Summary Strip -->
+                <div class="summary-strip">
+                    <div class="summary-item">
+                        <div class="summary-value" id="points-today">0</div>
+                        <div class="summary-label">Points</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-value" id="minutes-earned">0</div>
+                        <div class="summary-label">Earned</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-value" id="tasks-done">0</div>
+                        <div class="summary-label">Tasks</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-value" id="focus-time">0m</div>
+                        <div class="summary-label">Focus</div>
+                    </div>
+                </div>
+
+                <!-- Tasks -->
+                <div class="card">
+                    <h3>Tasks</h3>
+                    <p class="note">Complete tasks to earn bonus focus time</p>
+                    <div class="add-row">
+                        <input type="text" id="task-input" placeholder="e.g. Workout 30min">
+                        <button id="add-task-btn" class="btn btn-primary">Add</button>
+                    </div>
+                    <ul id="tasks-list" class="list">
+                        <li class="empty">No tasks yet</li>
+                    </ul>
+                </div>
+
+                <!-- Blocked Apps -->
+                <div class="card">
+                    <h3>Blocked Apps</h3>
+                    <p class="note">These apps will be closed during focus</p>
+                    <div class="add-row">
+                        <input type="text" id="custom-app-input" placeholder="e.g. chrome.exe">
+                        <button id="add-app-btn" class="btn btn-primary">Add</button>
+                    </div>
+                    <ul id="blocked-apps-list" class="list">
+                        <li class="empty">No apps blocked</li>
+                    </ul>
+                </div>
+
+                <!-- Stats -->
+                <div class="stats-row">
+                    <div class="stat-box">
+                        <div class="value" id="stat-blocked">0</div>
+                        <div class="label">Blocked</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="value" id="stat-focus">0m</div>
+                        <div class="label">Today</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="value" id="stat-streak">0</div>
+                        <div class="label">Streak</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="value" id="stat-total">0</div>
+                        <div class="label">Sessions</div>
+                    </div>
+                </div>
+
+                <!-- Activity Log -->
+                <div class="card">
+                    <h3>Recent Blocks</h3>
+                    <div id="activity-log" class="log-list">
+                        <p class="note" style="margin:0;text-align:center;padding:1rem 0;">No blocks yet</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Settings Modal -->
+        <div id="settings-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Settings</h2>
+                    <button class="close-btn" id="close-settings">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="setting-group">
+                        <h3>Block Content</h3>
+                        <label class="toggle">
+                            <span>Block YouTube Shorts</span>
+                            <input type="checkbox" id="toggle-youtube-shorts">
+                            <div class="toggle-track"></div>
+                        </label>
+                        <label class="toggle">
+                            <span>Block Instagram Reels</span>
+                            <input type="checkbox" id="toggle-reels">
+                            <div class="toggle-track"></div>
+                        </label>
+                        <label class="toggle">
+                            <span>Block TikTok</span>
+                            <input type="checkbox" id="toggle-tiktok">
+                            <div class="toggle-track"></div>
+                        </label>
+                        <label class="toggle">
+                            <span>Block Instagram Full</span>
+                            <input type="checkbox" id="toggle-instagram">
+                            <div class="toggle-track"></div>
+                        </label>
+                    </div>
+                    <div class="setting-group">
+                        <h3>Security</h3>
+                        <label class="toggle">
+                            <span>Strict Mode</span>
+                            <input type="checkbox" id="toggle-strict" checked>
+                            <div class="toggle-track"></div>
+                        </label>
+                        <button id="change-password-btn" class="btn btn-secondary" style="width:100%">Change Password</button>
+                    </div>
+                    <div class="setting-group">
+                        <h3>Maintenance</h3>
+                        <button id="backup-hosts-btn" class="btn btn-secondary" style="width:100%">Backup Hosts File</button>
+                        <button id="restore-hosts-btn" class="btn btn-secondary" style="width:100%">Restore Hosts File</button>
+                        <button id="reset-stats-btn" class="btn btn-danger" style="width:100%">Reset Statistics</button>
+                        <button id="reset-tasks-btn" class="btn btn-danger" style="width:100%">Reset Tasks & Points</button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="save-settings" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Change Password Modal -->
+        <div id="password-modal" class="modal hidden">
+            <div class="modal-content modal-small">
+                <div class="modal-header">
+                    <h2>Change Password</h2>
+                    <button class="close-btn" id="close-password">×</button>
+                </div>
+                <div class="modal-body">
+                    <input type="password" id="current-pw" placeholder="Current password" autocomplete="off">
+                    <input type="password" id="new-pw" placeholder="New password" autocomplete="off">
+                    <input type="password" id="confirm-pw" placeholder="Confirm new password" autocomplete="off">
+                    <p id="pw-modal-error" class="error"></p>
+                </div>
+                <div class="modal-footer">
+                    <button id="save-password-btn" class="btn btn-primary">Update</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirm Dialog -->
+        <div id="confirm-dialog" class="modal hidden">
+            <div class="modal-content modal-small">
+                <div class="modal-header">
+                    <h2>Confirm</h2>
+                    <button class="close-btn" id="confirm-close">×</button>
+                </div>
+                <div class="modal-body">
+                    <p id="confirm-message"></p>
+                </div>
+                <div class="modal-footer">
+                    <button id="confirm-no" class="btn btn-secondary">Cancel</button>
+                    <button id="confirm-yes" class="btn btn-danger">Yes</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
