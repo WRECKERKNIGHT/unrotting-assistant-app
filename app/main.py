@@ -224,3 +224,16 @@ def cli(args: list = None) -> None:
 
 if __name__ == "__main__":
     cli()
+
+def check_admin_rights():
+    """Check if running with admin privileges and warn if not."""
+    import ctypes
+    try:
+        is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
+        if not is_admin:
+            print("[WARNING] Running without admin rights.")
+            print("          Hosts file blocking will not work.")
+            print("          Please run as Administrator.")
+        return is_admin
+    except Exception:
+        return False
