@@ -580,3 +580,30 @@ def run_app() -> None:
 
 if __name__ == "__main__":
     run_app()
+
+def validate_config(cfg: dict) -> tuple[bool, list]:
+    """Validate configuration and return (is_valid, errors)."""
+    errors = []
+    
+    # Check timing values
+    if cfg.get("focus_duration_minutes", 45) != 45:
+        errors.append("focus_duration_minutes must be 45")
+    if cfg.get("break_duration_minutes", 15) != 15:
+        errors.append("break_duration_minutes must be 15")
+    if cfg.get("long_break_duration_minutes", 15) != 15:
+        errors.append("long_break_duration_minutes must be 15")
+    
+    # Check required fields
+    required = ["strict_mode", "block_reels", "block_shorts", "block_tiktok",
+                "block_instagram", "block_youtube_shorts", "allow_full_videos",
+                "focus_duration_minutes", "break_duration_minutes",
+                "long_break_interval", "long_break_duration_minutes",
+                "password_hash", "auto_start", "block_killing",
+                "blocked_hosts", "blocked_apps", "whitelisted_urls",
+                "enabled", "apps_locked"]
+    
+    for field in required:
+        if field not in cfg:
+            errors.append(f"Missing required field: {field}")
+    
+    return len(errors) == 0, errors
