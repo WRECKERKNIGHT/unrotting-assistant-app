@@ -61,3 +61,30 @@ echo ""
 echo "To distribute:"
 echo "  - Notarize with Apple: xcrun notarytool submit dist/Unrotting.dmg"
 echo "  - Create distributable disk image"
+
+# Enhanced DMG creation with app bundle
+APP_BUNDLE="dist/Unrotting.app"
+mkdir -p "$APP_BUNDLE/Contents/MacOS"
+mkdir -p "$APP_BUNDLE/Contents/Resources"
+cp -r ui assets "$APP_BUNDLE/Contents/Resources/"
+cp dist/UnrottingMinimal "$APP_BUNDLE/Contents/MacOS/Unrotting"
+chmod +x "$APP_BUNDLE/Contents/MacOS/Unrotting"
+
+# Info.plist
+cat > "$APP_BUNDLE/Contents/Info.plist" << 'PLISTEOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleExecutable</key><string>Unrotting</string>
+    <key>CFBundleIdentifier</key><string>org.unrotting.app</string>
+    <key>CFBundleName</key><string>Unrotting</string>
+    <key>CFBundleVersion</key><string>1.0.0</string>
+    <key>CFBundleShortVersionString</key><string>1.0.0</string>
+    <key>NSHighResolutionCapable</key><true/>
+</dict>
+</plist>
+PLISTEOF
+
+# Create DMG with custom icon
+hdiutil create -volname "Unrotting" -srcfolder "$APP_BUNDLE" -ov -format UDZO dist/Unrotting.dmg
