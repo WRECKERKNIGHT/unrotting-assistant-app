@@ -607,3 +607,15 @@ def validate_config(cfg: dict) -> tuple[bool, list]:
             errors.append(f"Missing required field: {field}")
     
     return len(errors) == 0, errors
+
+def safe_hosts_update(cfg: dict) -> dict:
+    """Safely update hosts file with error handling."""
+    result = {"success": False, "error": None}
+    try:
+        update_hosts_file(cfg)
+        result["success"] = True
+    except PermissionError:
+        result["error"] = "Permission denied: Run as Administrator"
+    except Exception as e:
+        result["error"] = str(e)
+    return result
