@@ -88,3 +88,13 @@ echo "  adb install bin/Unrotting-1.0.0-debug.apk"
 echo ""
 echo "For production build, run:"
 echo "  buildozer android release"
+
+# Add APK signing configuration
+if [ -f "keystore.properties" ]; then
+    source keystore.properties
+    buildozer android debug release
+    echo "APK signed with custom keystore"
+else
+    echo "No keystore found, building debug APK"
+    buildozer android debug
+fi
