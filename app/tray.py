@@ -164,3 +164,9 @@ def run_tray():
 
 if __name__ == "__main__":
     run_tray()
+
+def update_timer_display(self, icon=None):
+    """Update the tray icon timer display."""
+    if self.is_running and self.time_left > 0:
+        self._generate_icon(icon)
+        icon.update_icon()
