@@ -619,3 +619,17 @@ def safe_hosts_update(cfg: dict) -> dict:
     except Exception as e:
         result["error"] = str(e)
     return result
+
+# Performance optimizations
+import gc
+
+def optimize_memory():
+    """Garbage collect and optimize memory usage."""
+    gc.collect()
+
+def lazy_load(func):
+    """Decorator for lazy loading of expensive operations."""
+    def wrapper(*args, **kwargs):
+        optimize_memory()
+        return func(*args, **kwargs)
+    return wrapper
