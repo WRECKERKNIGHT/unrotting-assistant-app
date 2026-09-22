@@ -1,3 +1,7 @@
+![PyPI version](https://img.shields.io/pypi/v/unrotting.svg)
+![Python versions](https://img.shields.io/pypi/pyversions/unrotting.svg)
+![Downloads](https://pepy.tech/badge/unrotting/month)
+
 # Unrotting — Focus Assistant App
 
 **Stop doomscrolling. Earn your scroll.**
