@@ -38,3 +38,9 @@ packages/*/node_modules/
 apps/*/node_modules/
 packages/*/dist/
 apps/*/dist/
+
+# Test artifacts
+coverage.xml
+.coverage
+htmlcov/
+.pytest_cache/
