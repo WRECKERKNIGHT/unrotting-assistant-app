@@ -269,3 +269,13 @@ This project is licensed under the **MIT License**. See [LICENSE](LICENSE) for d
 ---
 
 **Take back your time. Earn your scroll.** 🔥
+
+---
+
+## Downloads
+
+| Platform | Version | Download |
+|----------|---------|----------|
+| Windows | v1.0.0 | [UnrottingMinimal.exe](https://github.com/WRECKERKNIGHT/unrotting-assistant-app/releases/download/v1.0.0/UnrottingMinimal.exe) |
+| macOS | v1.0.0 | [Unrotting.dmg](https://github.com/WRECKERKNIGHT/unrotting-assistant-app/releases/download/v1.0.0/Unrotting.dmg) |
+| Android | v1.0.0 | [unrotting.apk](https://github.com/WRECKERKNIGHT/unrotting-assistant-app/releases/download/v1.0.0/unrotting.apk) |
