@@ -13,38 +13,76 @@
     let blockedApps = [];
     let canModify = true;
     let tasks = [];
+    let isAdmin = false;
 
     const $ = id => document.getElementById(id);
 
-    // ─── Init ───────────────────────────────────────────────────────────────
+    // ─── Toast System ───────────────────────────────────────────────────────
 
-    async function init() {
-        try {
-            config = await loadConfig();
-            checkPassword();
-            loadBlockedApps();
-            loadTasks();
-        } catch (e) {
-            console.error('Init error:', e);
+    function showToast(message, type = 'info') {
+        const container = $('toast-container');
+        const toast = document.createElement('div');
+        const icon = type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ';
+        toast.className = `toast toast-${type}`;
+        toast.innerHTML = `<span>${icon}</span><span>${message}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 4000);
+    }
+
+    // ─── Splash & Init ────────────────────────────────────────────────────
+
+    function showSplash() {
+        $('splash-screen').classList.remove('hidden');
+        setTimeout(() => {
+            $('splash-screen').classList.add('hidden');
+            checkPermission();
+        }, 2000);
+    }
+
+    async function checkPermission() {
+        if (!window.unrotting?.checkAdmin) {
+            showPasswordScreen();
+            return;
         }
-    }
-
-    async function loadConfig() {
-        if (window.unrotting?.getConfig) return await window.unrotting.getConfig();
-        return {
-            block_youtube_shorts: true, block_reels: true, block_tiktok: true,
-            block_instagram: false, focus_duration_minutes: 45, break_duration_minutes: 15,
-            long_break_interval: 4, strict_mode: true, has_password: false, blocked_apps: []
-        };
-    }
-
-    function checkPassword() {
-        if (config.has_password) {
-            $('password-screen').classList.remove('hidden');
-            $('main-app').classList.add('hidden');
+        isAdmin = await window.unrotting.checkAdmin();
+        if (!isAdmin) {
+            $('permission-screen').classList.remove('hidden');
         } else {
-            showMain();
+            showPasswordScreen();
         }
+    }
+
+    async function requestAdmin() {
+        try {
+            const result = await window.unrotting.requestAdmin();
+            if (result?.success) {
+                isAdmin = true;
+                $('permission-screen').classList.add('hidden');
+                showToast('Admin access granted!', 'success');
+                showPasswordScreen();
+            } else {
+                showToast('Admin access denied', 'error');
+                showPasswordScreen();
+            }
+        } catch (e) {
+            showToast('Failed to request admin', 'error');
+            showPasswordScreen();
+        }
+    }
+
+    function skipAdmin() {
+        isAdmin = false;
+        $('permission-screen').classList.add('hidden');
+        showToast('Running with limited features', 'info');
+        showPasswordScreen();
+    }
+
+    // ─── Password ───────────────────────────────────────────────────────────
+
+    function showPasswordScreen() {
+        config.has_password ?
+            $('password-screen').classList.remove('hidden') :
+            showMain();
     }
 
     async function verifyPassword(pw) {
@@ -54,8 +92,11 @@
 
     async function handlePasswordSubmit() {
         const pw = $('password-input').value;
-        if (await verifyPassword(pw)) showMain();
-        else $('password-error').textContent = 'Incorrect password';
+        if (await verifyPassword(pw)) {
+            showMain();
+        } else {
+            $('password-error').textContent = 'Incorrect password';
+        }
     }
 
     async function handleSetPassword() {
@@ -67,11 +108,13 @@
         $('password-screen').classList.remove('hidden');
         $('first-run-box').style.display = 'none';
         $('password-input').value = '';
+        showToast('Password set successfully', 'success');
     }
 
     function showMain() {
         $('password-screen').classList.add('hidden');
         $('main-app').classList.remove('hidden');
+        if (!isAdmin) $('admin-banner').classList.remove('hidden');
         loadStats();
         updateTimerDisplay();
         setupListeners();
@@ -152,12 +195,14 @@
         $('task-input').value = '';
         await loadTasks();
         await loadStats();
+        showToast('Task added', 'success');
     }
 
     async function completeTask(id) {
         await window.unrotting?.completeTask(id);
         await loadTasks();
         await loadStats();
+        showToast('Task completed! Points earned', 'success');
     }
 
     // ─── Blocked Apps ───────────────────────────────────────────────────────
@@ -184,18 +229,19 @@
     }
 
     function addApp() {
-        if (!canModify) { alert('Cannot modify during session'); return; }
+        if (!canModify) { showToast('Cannot modify during session', 'error'); return; }
         const app = $('custom-app-input').value.trim().toLowerCase();
         if (!app) return;
-        if (blockedApps.includes(app)) { alert('Already in list'); return; }
+        if (blockedApps.includes(app)) { showToast('Already in list', 'error'); return; }
         blockedApps.push(app);
         $('custom-app-input').value = '';
         renderBlockedApps();
         window.unrotting?.setConfig({ blocked_apps: blockedApps });
+        showToast('App added', 'success');
     }
 
     function removeApp(idx) {
-        if (!canModify) { alert('Cannot modify during session'); return; }
+        if (!canModify) { showToast('Cannot modify during session', 'error'); return; }
         blockedApps.splice(idx, 1);
         renderBlockedApps();
         window.unrotting?.setConfig({ blocked_apps: blockedApps });
@@ -215,6 +261,7 @@
             renderBlockedApps();
             renderTasks();
             await window.unrotting?.start_session();
+            showToast('Focus session started', 'info');
         } else {
             canModify = true;
             renderBlockedApps();
@@ -256,6 +303,7 @@
             canModify = true;
             renderBlockedApps(); renderTasks();
             await window.unrotting?.start_break();
+            showToast('Break time! Complete tasks to earn bonus', 'info');
         }
         updateTimerDisplay();
         await loadStats();
@@ -263,15 +311,17 @@
 
     function skipBreak() {
         if (!isBreak || !isRunning) return;
-        isBreak = false;
-        sessionsCompleted++;
-        timeLeft = 45 * 60; totalTime = timeLeft;
-        $('timer-label').textContent = 'Focus';
-        $('start-btn').textContent = 'Start Focus';
-        $('progress-ring').classList.remove('break');
-        canModify = false;
-        renderBlockedApps(); renderTasks();
-        window.unrotting?.end_break();
+        showConfirm('Skip break and start next focus session?', async () => {
+            isBreak = false;
+            sessionsCompleted++;
+            timeLeft = 45 * 60; totalTime = timeLeft;
+            $('timer-label').textContent = 'Focus';
+            $('start-btn').textContent = 'Start Focus';
+            $('progress-ring').classList.remove('break');
+            canModify = false;
+            renderBlockedApps(); renderTasks();
+            await window.unrotting?.end_break();
+        });
     }
 
     function updateTimerDisplay() {
@@ -304,6 +354,7 @@
             strict_mode: $('toggle-strict').checked,
         });
         closeSettings();
+        showToast('Settings saved', 'success');
     }
 
     // ─── Password Modal ─────────────────────────────────────────────────────
@@ -324,35 +375,38 @@
         config.has_password = true;
         $('pw-modal-error').textContent = 'Updated!';
         setTimeout(closePwModal, 1200);
+        showToast('Password updated', 'success');
     }
 
     // ─── Maintenance ────────────────────────────────────────────────────────
 
     async function backupHosts() {
         await window.unrotting?.backupHosts();
-        alert('Hosts file backed up.');
+        showToast('Hosts file backed up', 'success');
     }
 
     async function restoreHosts() {
-        showConfirm('Restore hosts file from backup?', async () => {
+        showConfirm('Restore hosts file? This will undo all blocking.', async () => {
             await window.unrotting?.restoreHosts();
-            alert('Hosts file restored.');
+            showToast('Hosts file restored', 'success');
         });
     }
 
     async function resetStats() {
-        showConfirm('Reset all statistics?', async () => {
+        showConfirm('Reset all statistics? This cannot be undone.', async () => {
             await window.unrotting?.resetStats();
             await loadStats();
+            showToast('Statistics reset', 'success');
         });
     }
 
     async function resetTasks() {
-        showConfirm('Reset all tasks and points?', async () => {
+        showConfirm('Reset all tasks and points? This cannot be undone.', async () => {
             await window.unrotting?.resetTasks();
             tasks = [];
             renderTasks();
             await loadStats();
+            showToast('Tasks and points reset', 'success');
         });
     }
 
@@ -366,6 +420,11 @@
         $('confirm-close').onclick = () => { $('confirm-dialog').classList.add('hidden'); };
     }
 
+    // ─── About ──────────────────────────────────────────────────────────────
+
+    function openAbout() { $('about-modal').classList.remove('hidden'); }
+    function closeAbout() { $('about-modal').classList.add('hidden'); }
+
     // ─── Helpers ────────────────────────────────────────────────────────────
 
     function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
@@ -378,11 +437,16 @@
     // ─── Event Listeners ────────────────────────────────────────────────────
 
     function setupListeners() {
+        // Permission
+        $('admin-btn').addEventListener('click', requestAdmin);
+        $('skip-admin-btn').addEventListener('click', skipAdmin);
+
         // Password
         $('password-btn').addEventListener('click', handlePasswordSubmit);
         $('password-input').addEventListener('keypress', e => { if (e.key === 'Enter') handlePasswordSubmit(); });
         $('set-password-btn').addEventListener('click', handleSetPassword);
         $('confirm-password').addEventListener('keypress', e => { if (e.key === 'Enter') handleSetPassword(); });
+        $('about-btn').addEventListener('click', openAbout);
 
         // Timer
         $('start-btn').addEventListener('click', toggleTimer);
@@ -419,27 +483,34 @@
         // Blocked apps
         $('add-app-btn').addEventListener('click', addApp);
         $('custom-app-input').addEventListener('keypress', e => { if (e.key === 'Enter') addApp(); });
+
+        // About
+        $('close-about').addEventListener('click', closeAbout);
+        $('open-repo-btn').addEventListener('click', e => {
+            e.preventDefault();
+            window.open('https://github.com/WRECKERKNIGHT/unrotting-assistant-app', '_blank');
+        });
+    }
+
+    // ─── Init ───────────────────────────────────────────────────────────────
+
+    function init() {
+        loadConfig().then(cfg => {
+            config = cfg;
+            showSplash();
+        });
+    }
+
+    async function loadConfig() {
+        if (window.unrotting?.getConfig) return await window.unrotting.getConfig();
+        return {
+            block_youtube_shorts: true, block_reels: true, block_tiktok: true,
+            block_instagram: false, focus_duration_minutes: 45, break_duration_minutes: 15,
+            long_break_interval: 4, strict_mode: true, has_password: false, blocked_apps: []
+        };
     }
 
     // Wait for pywebview
     if (window.pywebview) init();
     else window.addEventListener('pywebviewready', init);
 })();
-
-// Toast notification system
-function showToast(message, type = 'info', duration = 3000) {
-    const container = document.getElementById('toast-container') || createToastContainer();
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
-    toast.textContent = message;
-    container.appendChild(toast);
-    setTimeout(() => toast.remove(), duration);
-}
-
-function createToastContainer() {
-    const container = document.createElement('div');
-    container.id = 'toast-container';
-    container.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;';
-    document.body.appendChild(container);
-    return container;
-}

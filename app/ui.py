@@ -83,6 +83,25 @@ class UnrottingAPI:
         from app import verify_password
         return verify_password(self.config, password)
 
+    def check_admin(self) -> bool:
+        """Check if running as administrator."""
+        from app import is_admin
+        return is_admin()
+
+    def request_admin(self) -> dict:
+        """Request admin elevation (Windows only)."""
+        import subprocess
+        import sys
+        try:
+            # Try to restart with elevation
+            if sys.platform == 'win32':
+                subprocess.Popen([sys.executable, '-m', 'unrotting.app.main', 'run'],
+                               creationflags=subprocess.DETACHED_PROCESS)
+                return {"success": True, "message": "Please accept the UAC prompt"}
+            return {"success": True, "message": "Running with current permissions"}
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+
     def backup_hosts(self) -> bool:
         from app import ensure_hosts_backup
         ensure_hosts_backup()

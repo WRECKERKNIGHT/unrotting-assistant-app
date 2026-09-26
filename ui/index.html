@@ -8,12 +8,67 @@
 </head>
 <body>
     <div id="app">
+        <!-- Splash Screen -->
+        <div id="splash-screen" class="splash-screen">
+            <div class="splash-content">
+                <div class="splash-logo">🔥</div>
+                <h1 class="splash-title">Unrotting</h1>
+                <p class="splash-tagline">Stop doomscrolling. Earn your scroll.</p>
+                <div class="splash-loader">
+                    <div class="loader-bar"></div>
+                </div>
+                <p class="splash-version">v1.0.0</p>
+            </div>
+        </div>
+
+        <!-- Permission Request Screen -->
+        <div id="permission-screen" class="screen hidden">
+            <div class="glass-card login-card">
+                <div class="logo">
+                    <div class="logo-icon">🔒</div>
+                    <h1>Permission Required</h1>
+                    <p class="tagline">Unrotting needs admin access to block content effectively.</p>
+                </div>
+                <div class="permission-info">
+                    <div class="permission-item">
+                        <span class="perm-icon">🌐</span>
+                        <div>
+                            <strong>Hosts File Access</strong>
+                            <p>Block TikTok, Instagram Reels, YouTube Shorts at system level</p>
+                        </div>
+                    </div>
+                    <div class="permission-item">
+                        <span class="perm-icon">🪟</span>
+                        <div>
+                            <strong>Window Management</strong>
+                            <p>Close distracting browser tabs automatically</p>
+                        </div>
+                    </div>
+                    <div class="permission-item">
+                        <span class="perm-icon">⚡</span>
+                        <div>
+                            <strong>Process Control</strong>
+                            <p>Close specified apps during focus sessions</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="permission-actions">
+                    <button id="admin-btn" class="btn btn-primary btn-large">
+                        <span class="btn-icon">🔐</span> Request Admin Access
+                    </button>
+                    <button id="skip-admin-btn" class="btn btn-secondary">
+                        Continue with Limited Features
+                    </button>
+                </div>
+                <p class="permission-note">Your data stays local. No information is sent to any server.</p>
+            </div>
+        </div>
 
         <!-- Password Screen -->
-        <div id="password-screen" class="screen">
-            <div class="login-card">
+        <div id="password-screen" class="screen hidden">
+            <div class="glass-card login-card">
                 <div class="logo">
-                    <span class="logo-icon">🔥</span>
+                    <div class="logo-icon">🔥</div>
                     <h1>Unrotting</h1>
                     <p class="tagline">Block the noise. Stay focused.</p>
                 </div>
@@ -29,6 +84,7 @@
                     <button id="set-password-btn" class="btn btn-primary" style="width:100%">Set Password</button>
                     <p id="pw-error" class="error"></p>
                 </div>
+                <button id="about-btn" class="btn-link">About Unrotting</button>
             </div>
         </div>
 
@@ -51,6 +107,12 @@
             </header>
 
             <main>
+                <!-- Admin Status Banner -->
+                <div id="admin-banner" class="admin-banner hidden">
+                    <span class="banner-icon">⚠️</span>
+                    <span>Running without admin rights — some features limited</span>
+                </div>
+
                 <!-- Timer -->
                 <div class="card timer-section">
                     <div class="timer-circle">
@@ -235,6 +297,27 @@
             </div>
         </div>
 
+        <!-- About Modal -->
+        <div id="about-modal" class="modal hidden">
+            <div class="modal-content modal-small">
+                <div class="modal-header">
+                    <h2>About Unrotting</h2>
+                    <button class="close-btn" id="close-about">×</button>
+                </div>
+                <div class="modal-body" style="text-align:center">
+                    <div class="about-logo">🔥</div>
+                    <h3 class="about-title">Unrotting</h3>
+                    <p class="about-version">Version 1.0.0</p>
+                    <p class="about-desc">A strict focus application that blocks short-form content while allowing full videos. Earn bonus focus time by completing real-world tasks.</p>
+                    <div class="about-links">
+                        <a href="#" id="open-repo-btn" class="btn-link">GitHub Repository</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Container -->
+        <div id="toast-container"></div>
     </div>
     <script src="app.js"></script>
 </body>
