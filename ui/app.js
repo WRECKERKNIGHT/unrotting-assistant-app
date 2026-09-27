@@ -514,3 +514,16 @@
     if (window.pywebview) init();
     else window.addEventListener('pywebviewready', init);
 })();
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !isBreak && isRunning) {
+            // Don't allow escape during focus session
+            e.preventDefault();
+            showToast('Cannot close during focus session', 'error');
+        }
+        if (e.code === 'Space' && $('main-app').classList.contains('screen')) {
+            e.preventDefault();
+            toggleTimer();
+        }
+    });
