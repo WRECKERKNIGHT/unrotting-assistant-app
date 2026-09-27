@@ -288,6 +288,37 @@ class Stats:
         self.path = CONFIG_DIR / "stats.json"
         self.data = self._load()
 
+    def start_notification(self) -> None:
+        """Show desktop notification for session start."""
+        try:
+            import platform
+            if platform.system() == 'Windows':
+                from win10toast import ToastNotifier
+                toaster = ToastNotifier()
+                toaster.show_toast("Unrotting", "Focus session started!", icon_path=str(Path(__file__).parent.parent / "assets" / "icon.ico"), duration=3)
+            elif platform.system() == 'Darwin':
+                subprocess.run(['osascript', '-e', 'display notification "Focus session started" with title "Unrotting"'])
+            else:
+                # Linux
+                subprocess.run(['notify-send', 'Unrotting', 'Focus session started!'])
+        except Exception:
+            pass  # Silent fail for notifications
+
+    def end_notification(self, blocks: int) -> None:
+        """Show desktop notification for session end."""
+        try:
+            import platform
+            if platform.system() == 'Windows':
+                from win10toast import ToastNotifier
+                toaster = ToastNotifier()
+                toaster.show_toast("Unrotting", f"Focus session complete! {blocks} blocks.", icon_path=str(Path(__file__).parent.parent / "assets" / "icon.ico"), duration=5)
+            elif platform.system() == 'Darwin':
+                subprocess.run(['osascript', '-e', f'display notification "Session complete! {blocks} blocks" with title "Unrotting"'])
+            else:
+                subprocess.run(['notify-send', 'Unrotting', f'Focus session complete! {blocks} blocks.'])
+        except Exception:
+            pass  # Silent fail for notifications
+
     def _load(self) -> dict:
         if self.path.exists():
             try:
