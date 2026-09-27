@@ -813,3 +813,39 @@ main {
     .timer-circle { width: 160px; height: 160px; }
     .timer-digits { font-size: 2.75rem; }
 }
+
+/* Focus Mode Overlay */
+.focus-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.focus-overlay .timer-circle {
+    width: 300px;
+    height: 300px;
+}
+
+.focus-overlay .timer-digits {
+    font-size: 5rem;
+}
+
+.focus-overlay .focus-message {
+    font-size: 1.5rem;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+.focus-overlay .focus-quote {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    font-style: italic;
+    max-width: 400px;
+    text-align: center;
+}
