@@ -527,3 +527,18 @@
             toggleTimer();
         }
     });
+
+const focusQuotes = [
+    "The secret of getting ahead is getting started.",
+    "It always seems impossible until it's done.",
+    "Focus on being productive instead of busy.",
+    "Your future is created by what you do today.",
+    "The only way to do great work is to love what you do.",
+    "Don't watch the clock; do what it does. Keep going.",
+    "Success is the sum of small efforts repeated daily.",
+    "What you get by achieving your goals is not as important as what you become."
+];
+
+function getRandomQuote() {
+    return focusQuotes[Math.floor(Math.random() * focusQuotes.length)];
+}
