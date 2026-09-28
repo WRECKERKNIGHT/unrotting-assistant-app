@@ -143,3 +143,19 @@ echo ""
 echo "To sign and notarize (optional):"
 echo "  codesign --sign 'Developer ID' --deep dist/${APP_NAME}.app"
 echo "  xcrun notarytool submit dist/${DMG_NAME} --apple-id YOUR@email --team-id TEAMID"
+
+# Verify build artifacts
+echo "Verifying build artifacts..."
+if [ -f "dist/Unrotting.dmg" ]; then
+    echo "✓ DMG created: dist/Unrotting.dmg"
+    ls -lh dist/Unrotting.dmg
+else
+    echo "✗ DMG not found"
+    exit 1
+fi
+
+# Create checksum for verification
+if command -v shasum &> /dev/null; then
+    shasum -a 256 "dist/Unrotting.dmg" > "dist/Unrotting.dmg.sha256"
+    echo "✓ Checksum generated: dist/Unrotting.dmg.sha256"
+fi
