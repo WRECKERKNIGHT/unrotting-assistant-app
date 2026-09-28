@@ -279,3 +279,19 @@ This project is licensed under the **MIT License**. See [LICENSE](LICENSE) for d
 | Windows | v1.0.0 | [UnrottingMinimal.exe](https://github.com/WRECKERKNIGHT/unrotting-assistant-app/releases/download/v1.0.0/UnrottingMinimal.exe) |
 | macOS | v1.0.0 | [Unrotting.dmg](https://github.com/WRECKERKNIGHT/unrotting-assistant-app/releases/download/v1.0.0/Unrotting.dmg) |
 | Android | v1.0.0 | [unrotting.apk](https://github.com/WRECKERKNIGHT/unrotting-assistant-app/releases/download/v1.0.0/unrotting.apk) |
+
+## Features (v1.1.0)
+
+### New in v1.1.0
+- **Splash Screen** — Animated loading screen with brand identity
+- **Permission Dialogs** — Clear explanation of required permissions with graceful fallback
+- **Focus Mode Overlay** — Fullscreen distraction-free focus mode with motivational quotes
+- **Desktop Notifications** — Cross-platform notifications for session events
+- **Keyboard Shortcuts** — Space to pause, Escape blocked during sessions
+- **About Modal** — Brand information and GitHub link
+- **Toast Notifications** — In-app feedback for all user actions
+
+### Enhanced Security
+- Admin/sudo detection with clear warnings
+- Permission-based feature unlocking
+- Secure password handling with SHA-256
