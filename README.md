@@ -295,3 +295,36 @@ This project is licensed under the **MIT License**. See [LICENSE](LICENSE) for d
 - Admin/sudo detection with clear warnings
 - Permission-based feature unlocking
 - Secure password handling with SHA-256
+
+## Advanced Usage
+
+### Command Line Options
+```bash
+# Start with debug logging
+PYTHONDEBUG=1 python -m unrotting.app.main run
+
+# Run with specific config
+python -m unrotting.app.main --config custom_config.json run
+```
+
+### Custom Configuration
+Create a custom config at `config/custom_config.json`:
+```json
+{
+  "strict_mode": true,
+  "block_tiktok": true,
+  "block_youtube_shorts": true,
+  "blocked_apps": ["chrome.exe", "firefox.exe"]
+}
+```
+
+### Logs Location
+- Windows: `%USERPROFILE%\unrotting.log`
+- macOS/Linux: `./unrotting.log`
+
+### Data Storage
+All data is stored locally in `config/`:
+- `config.json` - Application settings
+- `stats.json` - Focus session statistics
+- `tasks.json` - Tasks and points
+- `hosts.backup` - Backup of hosts file
