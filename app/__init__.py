@@ -698,3 +698,44 @@ def get_session_status() -> dict:
 _session_active = False
 _is_break_time = False
 _time_remaining = 0
+
+def safe_config_save(cfg: dict) -> bool:
+    """Safely save config with backup on failure."""
+    try:
+        # Create backup before save
+        backup_path = CONFIG_DIR / "config.backup.json"
+        if CONFIG_DIR / "config.json".exists():
+            import shutil
+            shutil.copy2(CONFIG_DIR / "config.json", backup_path)
+        
+        # Attempt save
+        save_config(cfg)
+        return True
+    except Exception as e:
+        logger.error(f"Failed to save config: {e}")
+        # Try to restore from backup
+        if (CONFIG_DIR / "config.backup.json").exists():
+            try:
+                import shutil
+                shutil.copy2(CONFIG_DIR / "config.backup.json", CONFIG_DIR / "config.json")
+                logger.info("Restored config from backup")
+            except:
+                pass
+        return False
+
+def safe_hosts_update(cfg: dict) -> dict:
+    """Safely update hosts file with rollback on failure."""
+    result = {"success": False, "error": None}
+    try:
+        # Backup first
+        ensure_hosts_backup()
+        
+        # Update hosts
+        update_hosts_file(cfg)
+        result["success"] = True
+    except PermissionError:
+        result["error"] = "Permission denied: Run as Administrator"
+    except Exception as e:
+        result["error"] = str(e)
+        logger.error(f"Hosts update failed: {e}")
+    return result
