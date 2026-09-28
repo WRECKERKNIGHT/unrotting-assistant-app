@@ -36,9 +36,17 @@ class UnrottingTray:
         self._stop_icon_update = threading.Event()
 
     def _create_menu(self):
-        return pystray.Menu(
+        """Create context menu for tray icon."""
+        items = [
             pystray.MenuItem("Open Unrotting", self._open_app, default=True),
-            pystray.MenuSeparator(),
+        ]
+        
+        try:
+            items.append(pystray.MenuItem("---", None, enabled=False))
+        except:
+            items.append(pystray.MenuItem("—", None, enabled=False))
+        
+        items.extend([
             pystray.MenuItem("Start Focus Session", self._start_focus,
                            enabled=lambda: not self.is_running),
             pystray.MenuItem("Pause Timer", self._pause_timer,
@@ -47,12 +55,22 @@ class UnrottingTray:
                            enabled=lambda: self.is_running and not self.is_break),
             pystray.MenuItem("Skip Break", self._skip_break,
                            enabled=lambda: self.is_running and self.is_break),
-            pystray.MenuSeparator(),
+        ])
+        
+        try:
+            items.append(pystray.MenuItem("---", None, enabled=False))
+        except:
+            items.append(pystray.MenuItem("—", None, enabled=False))
+        
+        items.extend([
             pystray.MenuItem("Settings", self._open_settings),
             pystray.MenuItem("Exit", self._exit_app),
-        )
+        ])
+        
+        return pystray.Menu(*items)
 
     def _open_app(self, icon=None, menu=None):
+        """Open the main application window."""
         try:
             from app.ui import create_window
             config = load_config()
@@ -63,6 +81,7 @@ class UnrottingTray:
             print(f"Error opening app: {e}")
 
     def _start_focus(self, icon=None, menu=None):
+        """Start a focus session."""
         self.is_running = True
         self.is_break = False
         self.time_left = 45 * 60
@@ -72,12 +91,15 @@ class UnrottingTray:
         update_hosts_file(self.config, force_unblock=False)
 
     def _pause_timer(self, icon=None, menu=None):
+        """Pause the current timer."""
         self.is_running = False
 
     def _resume_timer(self, icon=None, menu=None):
+        """Resume the paused timer."""
         self.is_running = True
 
     def _skip_break(self, icon=None, menu=None):
+        """Skip current break and start next focus session."""
         self.is_break = False
         self.time_left = 45 * 60
         self.total_time = 45 * 60
@@ -85,9 +107,11 @@ class UnrottingTray:
         update_hosts_file(self.config, force_unblock=False)
 
     def _open_settings(self, icon=None, menu=None):
+        """Open settings dialog."""
         self._open_app(icon, menu)
 
     def _exit_app(self, icon=None, menu=None):
+        """Exit the application."""
         if self.session_id and self.session_start_time:
             focus_seconds = int(time.time() - self.session_start_time)
             self.stats.end_session(self.session_id, 0, focus_seconds)
@@ -95,6 +119,7 @@ class UnrottingTray:
         icon.stop()
 
     def _generate_icon(self, icon=None):
+        """Generate a custom icon with timer text."""
         if self.icon_path.exists():
             img = Image.open(self.icon_path).resize((128, 128), Image.Resampling.LANCZOS)
         else:
@@ -133,13 +158,12 @@ class UnrottingTray:
         """Background thread to update icon periodically."""
         while not self._stop_icon_update.is_set():
             self._stop_icon_update.wait(1)
-            # Trigger icon update by calling update
             if self._running_icon:
                 self._running_icon.update_icon()
 
     def run(self):
+        """Start the system tray icon."""
         self._stop_icon_update.clear()
-        self._running_icon = None
 
         tray_icon = pystray.Icon(
             "unrotting",
@@ -158,15 +182,10 @@ class UnrottingTray:
 
 
 def run_tray():
+    """Entry point for tray-only mode."""
     tray = UnrottingTray()
     tray.run()
 
 
 if __name__ == "__main__":
     run_tray()
-
-def update_timer_display(self, icon=None):
-    """Update the tray icon timer display."""
-    if self.is_running and self.time_left > 0:
-        self._generate_icon(icon)
-        icon.update_icon()
