@@ -28,3 +28,24 @@
 - Config validation for locked timing values
 - Windows auto-start registry paths
 - Android build signing support
+
+## v1.1.0 (2026-09-28)
+### Added
+- Animated splash screen with loading indicator
+- Permission request dialog with feature explanation
+- Focus mode fullscreen overlay
+- Desktop notifications (Windows, macOS, Linux)
+- Keyboard shortcuts (Space, Escape)
+- About modal with branding
+- Toast notification system
+- Cross-platform permission manager
+- macOS-specific build support
+- Motivational quotes for focus sessions
+- Windows installer script improvements
+- Comprehensive macOS build documentation
+
+### Changed
+- Redesigned UI with consistent branding
+- Improved permission warnings and handling
+- Enhanced error messages throughout the app
+- Updated CSS with new design tokens
