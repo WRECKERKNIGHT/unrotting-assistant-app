@@ -237,3 +237,32 @@ def check_admin_rights():
         return is_admin
     except Exception:
         return False
+
+
+def check_hosts_blocked() -> bool:
+    """Check if hosts file has blocking rules active."""
+    try:
+        from app import HOSTS_FILE
+        if not HOSTS_FILE.exists():
+            return False
+        content = HOSTS_FILE.read_text()
+        return "UNROTTING_BLOCK" in content
+    except Exception:
+        return False
+
+
+def get_hosts_status() -> dict:
+    """Get current hosts file status."""
+    try:
+        from app import HOSTS_FILE
+        if not HOSTS_FILE.exists():
+            return {"exists": False, "blocked": False}
+        content = HOSTS_FILE.read_text()
+        has_blocking = "UNROTTING_BLOCK" in content
+        return {
+            "exists": True,
+            "blocked": has_blocking,
+            "has_entries": len([l for l in content.splitlines() if "127.0.0.1" in l]) > 0
+        }
+    except Exception as e:
+        return {"exists": False, "blocked": False, "error": str(e)}
