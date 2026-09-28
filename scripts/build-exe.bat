@@ -52,3 +52,14 @@ echo.
 echo To install as service/autorun, copy to:
 echo   C:\Program Files\Unrotting\Unrotting.exe
 pause
+:: Verify build output
+if exist dist\UnrottingMinimal.exe (
+    echo [SUCCESS] Build complete!
+    dir dist\*.exe
+) else (
+    echo [ERROR] Build failed - executable not found
+    exit /b 1
+)
+
+:: Create SHA256 checksum
+powershell -Command "Get-FileHash dist\UnrottingMinimal.exe -Algorithm SHA256 | Format-Table"
