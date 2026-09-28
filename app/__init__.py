@@ -680,3 +680,21 @@ def performance_monitor(func):
             logger.warning(f"{func.__name__} took {elapsed:.3f}s")
         return result
     return wrapper
+
+def check_session_locked() -> bool:
+    """Check if a focus session is active and locked."""
+    return _session_active and not _is_break_time
+
+def get_session_status() -> dict:
+    """Get current session status for UI."""
+    return {
+        "is_active": _session_active,
+        "is_break": _is_break_time,
+        "is_locked": check_session_locked(),
+        "time_remaining": _time_remaining if '_time_remaining' in globals() else 0
+    }
+
+# Global session state
+_session_active = False
+_is_break_time = False
+_time_remaining = 0
