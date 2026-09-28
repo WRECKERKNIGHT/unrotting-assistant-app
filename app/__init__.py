@@ -664,3 +664,19 @@ def lazy_load(func):
         optimize_memory()
         return func(*args, **kwargs)
     return wrapper
+
+# Performance monitoring
+import time
+from functools import wraps
+
+def performance_monitor(func):
+    """Decorator to log function execution time."""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.perf_counter()
+        result = func(*args, **kwargs)
+        elapsed = time.perf_counter() - start
+        if elapsed > 0.1:  # Log only slow operations
+            logger.warning(f"{func.__name__} took {elapsed:.3f}s")
+        return result
+    return wrapper
