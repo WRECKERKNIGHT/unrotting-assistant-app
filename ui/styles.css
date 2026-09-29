@@ -44,6 +44,8 @@ body {
 .splash-title { font-size: 2.25rem; font-weight: 700; margin: 1rem 0 0.5rem; letter-spacing: -0.02em; }
 .splash-tagline { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem; }
 .splash-loader { width: 160px; height: 2px; background: var(--surface); border-radius: 1px; overflow: hidden; margin: 0 auto; }
+.splash-logo { animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.8; transform: scale(0.98); } }
 .loader-bar { height: 100%; background: var(--text); border-radius: 1px; animation: loadBar 1.5s ease-in-out infinite; }
 @keyframes loadBar { 0% { width: 0%; margin-left: 0; } 50% { width: 70%; margin-left: 15%; } 100% { width: 0%; margin-left: 100%; } }
 .splash-version { color: var(--text-muted); font-size: 0.75rem; margin-top: 1rem; }
