@@ -107,19 +107,22 @@ def ensure_hosts_backup() -> None:
             logger.error("Need admin to back up hosts file")
 
 
-def update_hosts_file(cfg: dict, force_unblock: bool = False) -> None:
+def update_hosts_file(cfg: dict, force_unblock: bool = False) -> dict:
+    """Update hosts file with blocking rules. Returns status dict."""
+    result = {"success": False, "error": None}
     try:
         if not HOSTS_FILE.exists():
-            logger.error("Hosts file not found")
-            return
+            result["error"] = "Hosts file not found"
+            return result
 
+        # Read current content
         try:
             current = HOSTS_FILE.read_text()
         except PermissionError:
-            logger.error("Need admin rights to modify hosts file")
-            return
+            result["error"] = "Permission denied: Run as Administrator to modify hosts file"
+            return result
 
-        # Remove our entries
+        # Remove our existing entries
         lines = []
         skip = False
         for line in current.splitlines():
@@ -131,35 +134,62 @@ def update_hosts_file(cfg: dict, force_unblock: bool = False) -> None:
             skip = False
             lines.append(line)
 
-        if not force_unblock and (cfg.get("block_tiktok") or cfg.get("block_instagram") or cfg.get("block_youtube_shorts")):
+        # Add blocking entries if not forcing unblock
+        if not force_unblock and (cfg.get("block_tiktok") or cfg.get("block_instagram") or cfg.get("block_youtube_shorts") or cfg.get("block_reels") or cfg.get("block_shorts")):
             entries = [
                 "# UNROTTING_BLOCK - Start",
+                # TikTok
                 "127.0.0.1   www.tiktok.com",
                 "127.0.0.1   tiktok.com",
                 "127.0.0.1   m.tiktok.com",
+                "127.0.0.1   api.tiktok.com",
+                "127.0.0.1   api2.tiktok.com",
+                "127.0.0.1   v16.tiktokcdn.com",
+                # Instagram
                 "127.0.0.1   www.instagram.com",
                 "127.0.0.1   instagram.com",
+                "127.0.0.1   api.instagram.com",
+                "127.0.0.1   graph.instagram.com",
+                "127.0.0.1   scontent.cdninstagram.com",
+                # YouTube Shorts
                 "127.0.0.1   www.youtube.com",
                 "127.0.0.1   youtube.com",
                 "127.0.0.1   m.youtube.com",
+                "127.0.0.1   youtubei.googleapis.com",
+                "127.0.0.1   i.ytimg.com",
+                # Facebook Reels
                 "127.0.0.1   www.facebook.com",
                 "127.0.0.1   facebook.com",
+                "127.0.0.1   m.facebook.com",
+                "127.0.0.1   graph.facebook.com",
                 "# UNROTTING_BLOCK - End",
             ]
+
+            # Filter based on config
             if not cfg.get("block_tiktok"):
                 entries = [e for e in entries if "tiktok" not in e.lower()]
             if not cfg.get("block_reels") and not cfg.get("block_instagram"):
-                entries = [e for e in entries if "instagram" not in e.lower()]
-            if not cfg.get("block_youtube_shorts"):
-                entries = [e for e in entries if "youtube" not in e.lower()]
+                entries = [e for e in entries if "instagram" not in e.lower() and "facebook" not in e.lower()]
+            if not cfg.get("block_youtube_shorts") and not cfg.get("block_shorts"):
+                entries = [e for e in entries if "youtube" not in e.lower() and "ytimg" not in e.lower() and "youtubei" not in e.lower()]
+
             lines.extend(entries)
 
+        # Write updated content
         new_content = "\n".join(lines) + "\n"
-        HOSTS_FILE.write_text(new_content)
-        logger.info("Hosts file updated")
+        try:
+            HOSTS_FILE.write_text(new_content)
+            logger.info("Hosts file updated successfully")
+            result["success"] = True
+        except PermissionError:
+            result["error"] = "Permission denied: Run as Administrator to modify hosts file"
+            return result
 
     except Exception as e:
         logger.error(f"Error updating hosts: {e}")
+        result["error"] = str(e)
+
+    return result
 
 
 # ─── Task & Points System (merged from TS project) ───────────────────────────
