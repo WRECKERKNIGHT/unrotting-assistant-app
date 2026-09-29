@@ -17,6 +17,17 @@
 
     const $ = id => document.getElementById(id);
 
+    const focusQuotes = [
+        "The secret of getting ahead is getting started.",
+        "It always seems impossible until it's done.",
+        "Focus on being productive instead of busy.",
+        "Your future is created by what you do today.",
+        "The only way to do great work is to love what you do.",
+        "Don't watch the clock; do what it does. Keep going.",
+        "Success is the sum of small efforts repeated daily.",
+        "What you get by achieving your goals is not as important as what you become."
+    ];
+
     // ─── Toast System ───────────────────────────────────────────────────────
 
     function showToast(message, type = 'info') {
@@ -116,6 +127,8 @@
         $('main-app').classList.remove('hidden');
         if (!isAdmin) $('admin-banner').classList.remove('hidden');
         loadStats();
+        loadTasks();
+        loadBlockedApps();
         updateTimerDisplay();
         setupListeners();
     }
@@ -230,11 +243,22 @@
 
     function addApp() {
         if (!canModify) { showToast('Cannot modify during session', 'error'); return; }
-        const app = $('custom-app-input').value.trim().toLowerCase();
-        if (!app) return;
+        const select = $('app-select');
+        let app;
+        if (select.value === 'custom') {
+            app = $('custom-app-input').value.trim().toLowerCase();
+            if (!app) { showToast('Enter an app name', 'error'); return; }
+            if (!app.endsWith('.exe')) app += '.exe';
+        } else if (select.value) {
+            app = select.value;
+        } else {
+            return;
+        }
         if (blockedApps.includes(app)) { showToast('Already in list', 'error'); return; }
         blockedApps.push(app);
+        select.value = '';
         $('custom-app-input').value = '';
+        $('custom-app-row').classList.add('hidden');
         renderBlockedApps();
         window.unrotting?.setConfig({ blocked_apps: blockedApps });
         showToast('App added', 'success');
@@ -328,7 +352,7 @@
         const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
         $('timer-digits').textContent = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
         const progress = totalTime > 0 ? (totalTime - timeLeft) / totalTime : 0;
-        $('progress-ring').style.strokeDashoffset = 565 * (1 - progress);
+        $('progress-ring').style.strokeDashoffset = 534 * (1 - progress);
         document.title = isBreak ? `${m}:${String(s).padStart(2,'0')} — Break` : `${m}:${String(s).padStart(2,'0')} — Focus`;
     }
 
@@ -482,6 +506,14 @@
 
         // Blocked apps
         $('add-app-btn').addEventListener('click', addApp);
+        $('custom-app-btn').addEventListener('click', addApp);
+        $('app-select').addEventListener('change', () => {
+            if ($('app-select').value === 'custom') {
+                $('custom-app-row').classList.remove('hidden');
+            } else {
+                $('custom-app-row').classList.add('hidden');
+            }
+        });
         $('custom-app-input').addEventListener('keypress', e => { if (e.key === 'Enter') addApp(); });
 
         // About
@@ -510,35 +542,19 @@
         };
     }
 
-    // Wait for pywebview
-    if (window.pywebview) init();
-    else window.addEventListener('pywebviewready', init);
-})();
-
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && !isBreak && isRunning) {
-            // Don't allow escape during focus session
             e.preventDefault();
             showToast('Cannot close during focus session', 'error');
         }
-        if (e.code === 'Space' && $('main-app').classList.contains('screen')) {
+        if (e.code === 'Space' && $('main-app') && $('main-app').classList.contains('screen')) {
             e.preventDefault();
             toggleTimer();
         }
     });
 
-const focusQuotes = [
-    "The secret of getting ahead is getting started.",
-    "It always seems impossible until it's done.",
-    "Focus on being productive instead of busy.",
-    "Your future is created by what you do today.",
-    "The only way to do great work is to love what you do.",
-    "Don't watch the clock; do what it does. Keep going.",
-    "Success is the sum of small efforts repeated daily.",
-    "What you get by achieving your goals is not as important as what you become."
-];
-
-function getRandomQuote() {
-    return focusQuotes[Math.floor(Math.random() * focusQuotes.length)];
-}
+    // Wait for pywebview
+    if (window.pywebview) init();
+    else window.addEventListener('pywebviewready', init);
+})();
