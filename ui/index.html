@@ -8,65 +8,50 @@
 </head>
 <body>
     <div id="app">
-        <!-- Splash Screen -->
+        <!-- Splash -->
         <div id="splash-screen" class="splash-screen">
             <div class="splash-content">
                 <div class="splash-logo">🔥</div>
                 <h1 class="splash-title">Unrotting</h1>
                 <p class="splash-tagline">Stop doomscrolling. Earn your scroll.</p>
-                <div class="splash-loader">
-                    <div class="loader-bar"></div>
-                </div>
-                <p class="splash-version">v1.0.0</p>
+                <div class="splash-loader"><div class="loader-bar"></div></div>
+                <p class="splash-version">v1.1.0</p>
             </div>
         </div>
 
-        <!-- Permission Request Screen -->
+        <!-- Permission Screen -->
         <div id="permission-screen" class="screen hidden">
-            <div class="glass-card login-card">
+            <div class="login-card">
                 <div class="logo">
                     <div class="logo-icon">🔒</div>
                     <h1>Permission Required</h1>
-                    <p class="tagline">Unrotting needs admin access to block content effectively.</p>
+                    <p class="tagline">Unrotting needs admin access to block content.</p>
                 </div>
                 <div class="permission-info">
                     <div class="permission-item">
                         <span class="perm-icon">🌐</span>
-                        <div>
-                            <strong>Hosts File Access</strong>
-                            <p>Block TikTok, Instagram Reels, YouTube Shorts at system level</p>
-                        </div>
+                        <div><strong>Hosts File</strong><p>Block TikTok, Instagram Reels, YouTube Shorts</p></div>
                     </div>
                     <div class="permission-item">
                         <span class="perm-icon">🪟</span>
-                        <div>
-                            <strong>Window Management</strong>
-                            <p>Close distracting browser tabs automatically</p>
-                        </div>
+                        <div><strong>Window Mgmt</strong><p>Close distracting browser tabs</p></div>
                     </div>
                     <div class="permission-item">
                         <span class="perm-icon">⚡</span>
-                        <div>
-                            <strong>Process Control</strong>
-                            <p>Close specified apps during focus sessions</p>
-                        </div>
+                        <div><strong>Process Control</strong><p>Kill specified apps during focus</p></div>
                     </div>
                 </div>
                 <div class="permission-actions">
-                    <button id="admin-btn" class="btn btn-primary btn-large">
-                        <span class="btn-icon">🔐</span> Request Admin Access
-                    </button>
-                    <button id="skip-admin-btn" class="btn btn-secondary">
-                        Continue with Limited Features
-                    </button>
+                    <button id="admin-btn" class="btn btn-primary btn-large">Request Admin Access</button>
+                    <button id="skip-admin-btn" class="btn btn-secondary">Continue Limited</button>
                 </div>
-                <p class="permission-note">Your data stays local. No information is sent to any server.</p>
+                <p class="permission-note">Your data stays local. Nothing is sent to servers.</p>
             </div>
         </div>
 
         <!-- Password Screen -->
         <div id="password-screen" class="screen hidden">
-            <div class="glass-card login-card">
+            <div class="login-card">
                 <div class="logo">
                     <div class="logo-icon">🔥</div>
                     <h1>Unrotting</h1>
@@ -84,13 +69,12 @@
                     <button id="set-password-btn" class="btn btn-primary" style="width:100%">Set Password</button>
                     <p id="pw-error" class="error"></p>
                 </div>
-                <button id="about-btn" class="btn-link">About Unrotting</button>
+                <button id="about-btn" class="btn-link">About</button>
             </div>
         </div>
 
         <!-- Main App -->
         <div id="main-app" class="screen hidden">
-            <!-- Header -->
             <header class="glass-header">
                 <div class="logo-small">
                     <span class="logo-icon-small">🔥</span>
@@ -107,10 +91,9 @@
             </header>
 
             <main>
-                <!-- Admin Status Banner -->
                 <div id="admin-banner" class="admin-banner hidden">
                     <span class="banner-icon">⚠️</span>
-                    <span>Running without admin rights — some features limited</span>
+                    <span>Running without admin — some features limited</span>
                 </div>
 
                 <!-- Timer -->
@@ -131,7 +114,7 @@
                     </div>
                 </div>
 
-                <!-- Summary Strip -->
+                <!-- Summary -->
                 <div class="summary-strip">
                     <div class="summary-item">
                         <div class="summary-value" id="points-today">0</div>
@@ -167,10 +150,31 @@
                 <!-- Blocked Apps -->
                 <div class="card">
                     <h3>Blocked Apps</h3>
-                    <p class="note">These apps will be closed during focus</p>
+                    <p class="note">These apps close during focus</p>
                     <div class="add-row">
-                        <input type="text" id="custom-app-input" placeholder="e.g. chrome.exe">
+                        <select id="app-select" class="app-dropdown">
+                            <option value="">Select app...</option>
+                            <option value="chrome.exe">Google Chrome</option>
+                            <option value="firefox.exe">Mozilla Firefox</option>
+                            <option value="msedge.exe">Microsoft Edge</option>
+                            <option value="tiktok.exe">TikTok</option>
+                            <option value="instagram.exe">Instagram</option>
+                            <option value="discord.exe">Discord</option>
+                            <option value="telegram.exe">Telegram</option>
+                            <option value="whatsapp.exe">WhatsApp</option>
+                            <option value="spotify.exe">Spotify</option>
+                            <option value="steam.exe">Steam</option>
+                            <option value="epic.exe">Epic Games</option>
+                            <option value="origin.exe">Origin</option>
+                            <option value="battlenet.exe">Battle.net</option>
+                            <option value="code.exe">VS Code</option>
+                            <option value="custom">+ Custom App</option>
+                        </select>
                         <button id="add-app-btn" class="btn btn-primary">Add</button>
+                    </div>
+                    <div id="custom-app-row" class="add-row hidden">
+                        <input type="text" id="custom-app-input" placeholder="e.g. myapp.exe">
+                        <button id="custom-app-btn" class="btn btn-primary">Add</button>
                     </div>
                     <ul id="blocked-apps-list" class="list">
                         <li class="empty">No apps blocked</li>
@@ -179,22 +183,10 @@
 
                 <!-- Stats -->
                 <div class="stats-row">
-                    <div class="stat-box">
-                        <div class="value" id="stat-blocked">0</div>
-                        <div class="label">Blocked</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="value" id="stat-focus">0m</div>
-                        <div class="label">Today</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="value" id="stat-streak">0</div>
-                        <div class="label">Streak</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="value" id="stat-total">0</div>
-                        <div class="label">Sessions</div>
-                    </div>
+                    <div class="stat-box"><div class="value" id="stat-blocked">0</div><div class="label">Blocked</div></div>
+                    <div class="stat-box"><div class="value" id="stat-focus">0m</div><div class="label">Today</div></div>
+                    <div class="stat-box"><div class="value" id="stat-streak">0</div><div class="label">Streak</div></div>
+                    <div class="stat-box"><div class="value" id="stat-total">0</div><div class="label">Sessions</div></div>
                 </div>
 
                 <!-- Activity Log -->
@@ -217,42 +209,22 @@
                 <div class="modal-body">
                     <div class="setting-group">
                         <h3>Block Content</h3>
-                        <label class="toggle">
-                            <span>Block YouTube Shorts</span>
-                            <input type="checkbox" id="toggle-youtube-shorts">
-                            <div class="toggle-track"></div>
-                        </label>
-                        <label class="toggle">
-                            <span>Block Instagram Reels</span>
-                            <input type="checkbox" id="toggle-reels">
-                            <div class="toggle-track"></div>
-                        </label>
-                        <label class="toggle">
-                            <span>Block TikTok</span>
-                            <input type="checkbox" id="toggle-tiktok">
-                            <div class="toggle-track"></div>
-                        </label>
-                        <label class="toggle">
-                            <span>Block Instagram Full</span>
-                            <input type="checkbox" id="toggle-instagram">
-                            <div class="toggle-track"></div>
-                        </label>
+                        <label class="toggle"><span>Block YouTube Shorts</span><input type="checkbox" id="toggle-youtube-shorts"><div class="toggle-track"></div></label>
+                        <label class="toggle"><span>Block Instagram Reels</span><input type="checkbox" id="toggle-reels"><div class="toggle-track"></div></label>
+                        <label class="toggle"><span>Block TikTok</span><input type="checkbox" id="toggle-tiktok"><div class="toggle-track"></div></label>
+                        <label class="toggle"><span>Block Instagram Full</span><input type="checkbox" id="toggle-instagram"><div class="toggle-track"></div></label>
                     </div>
                     <div class="setting-group">
                         <h3>Security</h3>
-                        <label class="toggle">
-                            <span>Strict Mode</span>
-                            <input type="checkbox" id="toggle-strict" checked>
-                            <div class="toggle-track"></div>
-                        </label>
+                        <label class="toggle"><span>Strict Mode</span><input type="checkbox" id="toggle-strict" checked><div class="toggle-track"></div></label>
                         <button id="change-password-btn" class="btn btn-secondary" style="width:100%">Change Password</button>
                     </div>
                     <div class="setting-group">
                         <h3>Maintenance</h3>
-                        <button id="backup-hosts-btn" class="btn btn-secondary" style="width:100%">Backup Hosts File</button>
-                        <button id="restore-hosts-btn" class="btn btn-secondary" style="width:100%">Restore Hosts File</button>
-                        <button id="reset-stats-btn" class="btn btn-danger" style="width:100%">Reset Statistics</button>
-                        <button id="reset-tasks-btn" class="btn btn-danger" style="width:100%">Reset Tasks & Points</button>
+                        <button id="backup-hosts-btn" class="btn btn-secondary" style="width:100%">Backup Hosts</button>
+                        <button id="restore-hosts-btn" class="btn btn-secondary" style="width:100%">Restore Hosts</button>
+                        <button id="reset-stats-btn" class="btn btn-danger" style="width:100%">Reset Stats</button>
+                        <button id="reset-tasks-btn" class="btn btn-danger" style="width:100%">Reset Tasks</button>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -261,7 +233,7 @@
             </div>
         </div>
 
-        <!-- Change Password Modal -->
+        <!-- Password Modal -->
         <div id="password-modal" class="modal hidden">
             <div class="modal-content modal-small">
                 <div class="modal-header">
@@ -301,22 +273,21 @@
         <div id="about-modal" class="modal hidden">
             <div class="modal-content modal-small">
                 <div class="modal-header">
-                    <h2>About Unrotting</h2>
+                    <h2>About</h2>
                     <button class="close-btn" id="close-about">×</button>
                 </div>
                 <div class="modal-body" style="text-align:center">
                     <div class="about-logo">🔥</div>
                     <h3 class="about-title">Unrotting</h3>
-                    <p class="about-version">Version 1.0.0</p>
-                    <p class="about-desc">A strict focus application that blocks short-form content while allowing full videos. Earn bonus focus time by completing real-world tasks.</p>
+                    <p class="about-version">v1.1.0</p>
+                    <p class="about-desc">Block short-form content. Earn bonus focus time through real-world tasks. Stay focused, stay productive.</p>
                     <div class="about-links">
-                        <a href="#" id="open-repo-btn" class="btn-link">GitHub Repository</a>
+                        <a href="#" id="open-repo-btn" class="btn-link">GitHub</a>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Toast Container -->
         <div id="toast-container"></div>
     </div>
     <script src="app.js"></script>
