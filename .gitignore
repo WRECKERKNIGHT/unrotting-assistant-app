@@ -28,6 +28,7 @@ Thumbs.db
 
 # Build artifacts
 *.exe
+*.spec
 *.dmg
 *.apk
 *.pkg
