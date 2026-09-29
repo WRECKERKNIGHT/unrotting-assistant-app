@@ -3,6 +3,7 @@ Unrotting — Permission management for cross-platform support
 """
 import sys
 import os
+import subprocess
 from pathlib import Path
 
 
