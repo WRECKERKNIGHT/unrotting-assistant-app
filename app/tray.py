@@ -32,7 +32,7 @@ class UnrottingTray:
 
         # Icon setup
         self.icon_path = Path(__file__).parent.parent / "assets" / "icon.png"
-        self.menu = self._create_menu()
+        self._running_icon = None
         self._stop_icon_update = threading.Event()
 
     def _create_menu(self):
@@ -41,10 +41,11 @@ class UnrottingTray:
             pystray.MenuItem("Open Unrotting", self._open_app, default=True),
         ]
         
+        # Separator
         try:
             items.append(pystray.MenuItem("---", None, enabled=False))
         except:
-            items.append(pystray.MenuItem("—", None, enabled=False))
+            pass
         
         items.extend([
             pystray.MenuItem("Start Focus Session", self._start_focus,
@@ -60,7 +61,7 @@ class UnrottingTray:
         try:
             items.append(pystray.MenuItem("---", None, enabled=False))
         except:
-            items.append(pystray.MenuItem("—", None, enabled=False))
+            pass
         
         items.extend([
             pystray.MenuItem("Settings", self._open_settings),
@@ -116,10 +117,11 @@ class UnrottingTray:
             focus_seconds = int(time.time() - self.session_start_time)
             self.stats.end_session(self.session_id, 0, focus_seconds)
         self._stop_icon_update.set()
-        icon.stop()
+        if self._running_icon:
+            self._running_icon.stop()
 
-    def _generate_icon(self, icon=None):
-        """Generate a custom icon with timer text."""
+    def _generate_icon(self):
+        """Generate a custom icon with timer text. Returns PIL Image."""
         if self.icon_path.exists():
             img = Image.open(self.icon_path).resize((128, 128), Image.Resampling.LANCZOS)
         else:
@@ -159,7 +161,10 @@ class UnrottingTray:
         while not self._stop_icon_update.is_set():
             self._stop_icon_update.wait(1)
             if self._running_icon:
-                self._running_icon.update_icon()
+                try:
+                    self._running_icon.update_menu(self._create_menu())
+                except:
+                    pass
 
     def run(self):
         """Start the system tray icon."""
@@ -169,7 +174,7 @@ class UnrottingTray:
             "unrotting",
             self._generate_icon,
             "Unrotting - Focus Hard",
-            self.menu
+            self._create_menu()
         )
 
         self._running_icon = tray_icon
