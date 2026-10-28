@@ -1,1 +1,2 @@
 2026-09-27 21:19:41,445 [INFO] Hosts file backed up
+2026-09-29 08:47:17,108 [ERROR] Error updating hosts: [Errno 13] Permission denied: 'C:\\Windows\\System32\\drivers\\etc\\hosts'
